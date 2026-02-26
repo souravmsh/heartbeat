@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="${styleResetUri}" rel="stylesheet">
+  <link href="${styleVSCodeUri}" rel="stylesheet">
+  <link href="${styleMainUri}" rel="stylesheet">
+  <title>Timeout</title>
+</head>
+
+<body>
+  <div id="toast-container" class="toast-container"></div>
+
+
+
+  <!-- tab: Dashboard -->
+  <div id="tab-dashboard" class="tab-content active">
+    <div id="dashboard-grid" class="dashboard-grid">
+      <!-- 1. Clock & Coding Timer -->
+      <section class="card widget-timer" draggable="true">
+        <div class="header">
+          <span class="title">Current Session</span>
+          <span class="clock" id="clockDisplay">--:--</span>
+        </div>
+        <div class="time-display">
+          <h1 id="codingTimeDisplay">00:00:00</h1>
+          <p>Coding Time Today</p>
+        </div>
+        <div class="actions">
+          <button id="timerToggleBtn" class="primary-btn ios-btn">Pause Timer</button>
+          <button id="timerResetBtn" class="secondary-btn ios-btn icon-btn" title="Reset Timer">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path
+                d="M13.6 2.3C12.2 0.9 10.2 0 8 0 3.6 0 0 3.6 0 8s3.6 8 8 8c3.7 0 6.8-2.5 7.7-6h-2.1c-.8 2.3-3 4-5.6 4-3.3 0-6-2.7-6-6s2.7-6 6-6c1.7 0 3.1.7 4.1 1.8L9 7h7V0l-2.4 2.3z" />
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- 2. Priority Tasks -->
+      <section class="card widget-tasks" draggable="true">
+        <div class="header">
+          <span class="title">Tasks</span>
+          <button id="showAddTaskFormBtn" class="icon-btn action-icon">+</button>
+        </div>
+
+        <div class="add-form hidden" id="addTaskForm">
+          <input type="text" id="newTaskTitle" class="ios-input" placeholder="Task name">
+          <div class="input-row">
+            <input type="date" id="newTaskDate" class="ios-input">
+            <label class="ios-checkbox">
+              <input type="checkbox" id="newTaskHighPriority">
+              <span class="checkmark"></span>
+              High Priority
+            </label>
+          </div>
+          <button id="addTaskBtn" class="primary-btn ios-btn">Add Task</button>
+        </div>
+
+        <ul class="task-list ios-list" id="taskList">
+          <!-- Injected by JS -->
+        </ul>
+        <div id="emptyTasks" class="empty-state">No tasks to show. You're all caught up! ✨</div>
+      </section>
+
+      <!-- 3. Reminders & Groups -->
+      <section class="card widget-reminders" draggable="true">
+        <div class="header">
+          <span class="title">Reminders</span>
+          <button id="showAddReminderFormBtn" class="icon-btn action-icon">+</button>
+        </div>
+
+        <div class="add-form hidden" id="addReminderForm">
+          <input type="text" id="newBreakName" class="ios-input" placeholder="e.g. Drink Water">
+          <div class="input-row">
+            <input type="number" id="newBreakInterval" class="ios-input" placeholder="Mins">
+            <select id="newBreakGroup" class="ios-select">
+              <option value="Health">Health</option>
+              <option value="Productivity">Productivity</option>
+              <option value="Custom">Custom</option>
+            </select>
+          </div>
+          <button id="addBreakBtn" class="primary-btn ios-btn">Add Reminder</button>
+        </div>
+
+        <div class="reminder-groups" id="reminderContainer">
+          <!-- Injected by JS -->
+        </div>
+        <div id="emptyReminders" class="empty-state">No active reminders. Add some to stay healthy! 💧</div>
+      </section>
+      <!-- 4. Calendar & Leave Suggestions -->
+      <section class="card widget-calendar" draggable="true">
+        <div class="header">
+          <span class="title">Calendar</span>
+          <button id="showCalendarSettingsBtn" class="icon-btn action-icon">⚙</button>
+        </div>
+
+        <div class="add-form hidden" id="calendarSettingsForm">
+          <div class="setting-group" style="margin-bottom: 12px;">
+            <label class="setting-label">Weekends</label>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <label class="ios-checkbox"><input type="checkbox" id="weekend-0" value="0"><span
+                  class="checkmark"></span>Sun</label>
+              <label class="ios-checkbox"><input type="checkbox" id="weekend-1" value="1"><span
+                  class="checkmark"></span>Mon</label>
+              <label class="ios-checkbox"><input type="checkbox" id="weekend-2" value="2"><span
+                  class="checkmark"></span>Tue</label>
+              <label class="ios-checkbox"><input type="checkbox" id="weekend-3" value="3"><span
+                  class="checkmark"></span>Wed</label>
+              <label class="ios-checkbox"><input type="checkbox" id="weekend-4" value="4"><span
+                  class="checkmark"></span>Thu</label>
+              <label class="ios-checkbox"><input type="checkbox" id="weekend-5" value="5" checked><span
+                  class="checkmark"></span>Fri</label>
+              <label class="ios-checkbox"><input type="checkbox" id="weekend-6" value="6" checked><span
+                  class="checkmark"></span>Sat</label>
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Holidays Data Source</label>
+            <div class="input-row">
+              <input type="text" id="settingHolidaysPath" class="ios-input" style="margin-bottom: 0;"
+                placeholder="/path/to/holidays.json">
+              <button id="browseHolidaysBtn" class="secondary-btn ios-btn" style="white-space: nowrap;">Browse</button>
+            </div>
+            <button id="downloadSampleBtn" class="secondary-btn ios-btn"
+              style="width: 100%; margin-top: 8px; font-size: 12px;">Download Sample holidays.json</button>
+          </div>
+          <button id="saveCalendarSettingsBtn" class="primary-btn ios-btn" style="width: 100%; margin-top: 8px;">Save
+            Calendar Settings</button>
+        </div>
+
+        <div id="calendarContainer">
+          <!-- Injected by JS -->
+        </div>
+
+      </section>
+
+      <!-- 5. Salah Time Watch -->
+      <section class="card widget-salah" draggable="true">
+        <div class="header">
+          <div>
+            <span class="title">Prayer Schedule</span>
+            <div class="subtitle" id="salahMethodDisplay">Method: --</div>
+          </div>
+          <button id="showSalahSettingsBtn" class="icon-btn action-icon">⚙</button>
+        </div>
+
+        <div class="add-form hidden" id="salahSettingsForm">
+          <label class="setting-label">Calculation Method</label>
+          <select id="settingSalahMethod" class="ios-select">
+            <option value="MWL">Muslim World League</option>
+            <option value="ISNA">ISNA</option>
+            <option value="Jafari">Jafari</option>
+          </select>
+
+          <label class="setting-label" style="margin-top: 12px; display: block;">Adjust Minutes (±)</label>
+          <div class="salah-offsets-grid">
+            <div class="offset-item">
+              <span>Fajr</span>
+              <input type="number" id="offset-Fajr" class="ios-input small-input" value="0">
+            </div>
+            <div class="offset-item">
+              <span>Dhuhr</span>
+              <input type="number" id="offset-Dhuhr" class="ios-input small-input" value="0">
+            </div>
+            <div class="offset-item">
+              <span>Asr</span>
+              <input type="number" id="offset-Asr" class="ios-input small-input" value="0">
+            </div>
+            <div class="offset-item">
+              <span>Maghrib</span>
+              <input type="number" id="offset-Maghrib" class="ios-input small-input" value="0">
+            </div>
+            <div class="offset-item">
+              <span>Isha</span>
+              <input type="number" id="offset-Isha" class="ios-input small-input" value="0">
+            </div>
+          </div>
+
+          <button id="saveSalahSettingsBtn" class="primary-btn ios-btn" style="width: 100%; margin-top: 12px;">Save
+            Salah
+            Settings</button>
+        </div>
+
+        <div class="salah-watch">
+          <div class="next-prayer">
+            <p>Next Prayer</p>
+            <h2 id="nextPrayerName">--</h2>
+            <div class="countdown" id="salahCountdown">--:--:--</div>
+          </div>
+          <div class="prayer-ring">
+            <svg viewBox="0 0 100 100">
+              <circle class="bg" cx="50" cy="50" r="45"></circle>
+              <circle class="progress" cx="50" cy="50" r="45" id="salahProgress"></circle>
+            </svg>
+          </div>
+        </div>
+
+        <ul class="salah-list ios-list" id="salahList">
+          <!-- Injected by JS -->
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <script src="${scriptUri}"></script>
+</body>
+
+</html>

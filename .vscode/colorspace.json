@@ -1,0 +1,42 @@
+{
+  "customColors": [
+    {
+      "name": "Olive Black",
+      "activityBar": {
+        "background": "#507e2a",
+        "foreground": "#ffffff",
+        "inactiveForeground": "#a0a0a0"
+      },
+      "sideBar": {
+        "background": "#000000",
+        "foreground": "#e0e0e0"
+      },
+      "sideBarTitle": {
+        "foreground": "#ffffff"
+      },
+      "statusBar": {
+        "background": "#507e2a",
+        "foreground": "#ffffff"
+      }
+    }
+  ],
+  "currentColor": {
+    "name": "Olive Black",
+    "activityBar": {
+      "background": "#507e2a",
+      "foreground": "#ffffff",
+      "inactiveForeground": "#a0a0a0"
+    },
+    "sideBar": {
+      "background": "#000000",
+      "foreground": "#e0e0e0"
+    },
+    "sideBarTitle": {
+      "foreground": "#ffffff"
+    },
+    "statusBar": {
+      "background": "#507e2a",
+      "foreground": "#ffffff"
+    }
+  }
+}

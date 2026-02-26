@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary: #007aff;
+            --bg: rgba(28, 28, 30, 0.95);
+            --text: #ffffff;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #000;
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .overlay-container {
+            text-align: center;
+            padding: 40px;
+            border-radius: 32px;
+            background: var(--bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
+            max-width: 500px;
+            width: 90%;
+            animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0 0 32px 0;
+        }
+
+        .actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+        }
+
+        .primary-btn {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 122, 255, 0.4);
+        }
+
+        .secondary-btn {
+            background: var(--glass);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .secondary-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .countdown {
+            font-variant-numeric: tabular-nums;
+            font-weight: 200;
+            font-size: 14px;
+            margin-top: 24px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay-container">
+        <span class="icon" id="breakIcon">☕</span>
+        <h1 id="breakName">Time for a Break</h1>
+        <p id="breakMessage">Step away and recharge for a moment.</p>
+
+        <div class="actions">
+            <button class="secondary-btn" onclick="handleAction('dismiss')">Dismiss</button>
+            <button class="primary-btn" onclick="handleAction('snooze')">Snooze 5m</button>
+        </div>
+
+        <div class="countdown" id="autoDismiss">Auto-dismissing in 60s</div>
+    </div>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+        let remaining = 60;
+
+        // Update data from extension
+        window.addEventListener('message', event => {
+            const { name, icon } = event.data;
+            if (name) document.getElementById('breakName').textContent = name;
+            if (icon) document.getElementById('breakIcon').textContent = icon;
+        });
+
+        function handleAction(actionId) {
+            vscode.postMessage({ type: 'overlayAction', value: actionId });
+        }
+
+        // Auto-dismiss countdown
+        const interval = setInterval(() => {
+            remaining--;
+            document.getElementById('autoDismiss').textContent = `Auto-dismissing in ${remaining}s`;
+            if (remaining <= 0) {
+                clearInterval(interval);
+                handleAction('dismiss');
+            }
+        }, 1000);
+    </script>
+</body>
+
+</html>

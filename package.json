@@ -1,0 +1,100 @@
+{
+    "name": "timeout",
+    "displayName": "Timeout",
+    "description": "Helps developers manage productivity, health breaks, tasks, and daily activity.",
+    "version": "1.0.0",
+    "publisher": "souravmsh",
+    "icon": "assets/icon.png",
+    "author": "Shohrab Hossain <sourav.diubd@gmail.com>",
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "timeout-sidebar",
+                    "title": "Timeout",
+                    "icon": "$(coffee)"
+                }
+            ]
+        },
+        "views": {
+            "timeout-sidebar": [
+                {
+                    "type": "webview",
+                    "id": "timeout.sidebarView",
+                    "name": "Timeout Dashboard",
+                    "icon": "$(coffee)"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "timeout.refresh",
+                "title": "Refresh Timeout Dashboard"
+            }
+        ],
+        "configuration": {
+            "title": "Timeout",
+            "properties": {
+                "timeout.breaks.interval": {
+                    "type": "number",
+                    "default": 60,
+                    "description": "Interval for break reminders in minutes."
+                },
+                "timeout.salah.method": {
+                    "type": "string",
+                    "default": "MWL",
+                    "description": "Calculation method for Salah times."
+                },
+                "timeout.holidays.source": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Absolute path to holidays.json or holidays.csv."
+                },
+                "timeout.calendar.weekends": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    },
+                    "default": [
+                        5,
+                        6
+                    ],
+                    "description": "Days of the week to treat as weekends (0=Sun, 1=Mon, ..., 6=Sat)."
+                },
+                "timeout.salah.offsets": {
+                    "type": "object",
+                    "default": {
+                        "Fajr": 0,
+                        "Dhuhr": 0,
+                        "Asr": 0,
+                        "Maghrib": 0,
+                        "Isha": 0
+                    },
+                    "description": "Minute offsets for each prayer time."
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src --ext ts"
+    },
+    "devDependencies": {
+        "@types/node": "^18.0.0",
+        "@types/vscode": "^1.80.0",
+        "typescript": "^5.0.0"
+    }
+}
