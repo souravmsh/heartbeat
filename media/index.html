@@ -11,7 +11,7 @@
 </head>
 
 <body>
-  <div id="toast-container" class="toast-container"></div>
+  <div id="toast-container" class="toast-container top-right"></div>
 
 
 
@@ -148,40 +148,39 @@
         </div>
 
         <div class="add-form hidden" id="salahSettingsForm">
-          <label class="setting-label">Calculation Method</label>
-          <select id="settingSalahMethod" class="ios-select">
-            <option value="MWL">Muslim World League</option>
-            <option value="ISNA">ISNA</option>
-            <option value="Jafari">Jafari</option>
-          </select>
+          <div class="settings-row">
+            <label class="setting-label">Method</label>
+            <select id="settingSalahMethod" class="ios-select small-select">
+              <option value="MWL">MWL</option>
+              <option value="ISNA">ISNA</option>
+              <option value="Jafari">Jafari</option>
+            </select>
+          </div>
 
-          <label class="setting-label" style="margin-top: 12px; display: block;">Adjust Minutes (±)</label>
-          <div class="salah-offsets-grid">
-            <div class="offset-item">
+          <div class="salah-offsets-compact">
+            <div class="offset-small">
               <span>Fajr</span>
-              <input type="number" id="offset-Fajr" class="ios-input small-input" value="0">
+              <input type="number" id="offset-Fajr" class="ios-input tiny-input" value="0">
             </div>
-            <div class="offset-item">
+            <div class="offset-small">
               <span>Dhuhr</span>
-              <input type="number" id="offset-Dhuhr" class="ios-input small-input" value="0">
+              <input type="number" id="offset-Dhuhr" class="ios-input tiny-input" value="0">
             </div>
-            <div class="offset-item">
+            <div class="offset-small">
               <span>Asr</span>
-              <input type="number" id="offset-Asr" class="ios-input small-input" value="0">
+              <input type="number" id="offset-Asr" class="ios-input tiny-input" value="0">
             </div>
-            <div class="offset-item">
+            <div class="offset-small">
               <span>Maghrib</span>
-              <input type="number" id="offset-Maghrib" class="ios-input small-input" value="0">
+              <input type="number" id="offset-Maghrib" class="ios-input tiny-input" value="0">
             </div>
-            <div class="offset-item">
+            <div class="offset-small">
               <span>Isha</span>
-              <input type="number" id="offset-Isha" class="ios-input small-input" value="0">
+              <input type="number" id="offset-Isha" class="ios-input tiny-input" value="0">
             </div>
           </div>
 
-          <button id="saveSalahSettingsBtn" class="primary-btn ios-btn" style="width: 100%; margin-top: 12px;">Save
-            Salah
-            Settings</button>
+          <button id="saveSalahSettingsBtn" class="primary-btn ios-btn small-btn" style="width: 100%; margin-top: 8px;">Save Settings</button>
         </div>
 
         <div class="salah-watch">
