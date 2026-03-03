@@ -96,7 +96,7 @@ body {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: var(--tab-radius);
-  padding: 16px;
+  padding: 10px;
   margin-bottom: 0;
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(16px);
@@ -117,7 +117,7 @@ body {
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
+  gap: 10px;
   align-items: start;
 }
 
@@ -130,7 +130,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .card .header .title {
@@ -157,14 +157,14 @@ body {
 
 .time-display {
   text-align: center;
-  margin: 16px 0;
+  margin: 8px 0;
 }
 
 .time-display h1 {
-  font-size: 40px;
-  font-weight: 200;
-  margin: 0 0 4px 0;
-  letter-spacing: -1.5px;
+  font-size: 28px;
+  font-weight: 300;
+  margin: 0 0 2px 0;
+  letter-spacing: -1px;
   background: linear-gradient(135deg, var(--text-main), var(--primary));
   background-clip: text;
   -webkit-background-clip: text;
@@ -185,9 +185,9 @@ body {
 /* Buttons */
 .ios-btn {
   border: none;
-  padding: 10px 16px;
+  padding: 8px 12px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.1s, opacity 0.2s;
@@ -248,22 +248,22 @@ body {
 
 .add-form {
   background: rgba(128, 128, 128, 0.05);
-  padding: 12px;
+  padding: 10px;
   border-radius: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .ios-input,
 .ios-select {
   width: 100%;
-  padding: 10px 12px;
+  padding: 6px 10px;
   background: var(--vscode-input-background, rgba(128, 128, 128, 0.1));
   color: var(--vscode-input-foreground, inherit);
   border: 1px solid var(--vscode-input-border, transparent);
-  border-radius: 8px;
-  margin-bottom: 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
   box-sizing: border-box;
-  font-size: 14px;
+  font-size: 13px;
   font-family: inherit;
   transition: border-color 0.2s;
 }
@@ -298,9 +298,9 @@ body {
 
 .input-row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 /* Lists */
@@ -314,7 +314,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  padding: 4px 0;
   border-bottom: 1px solid rgba(128, 128, 128, 0.15);
 }
 
@@ -327,15 +327,43 @@ body {
   padding-top: 0;
 }
 
-.task-info .task-name {
-  font-size: 14px;
-  font-weight: 500;
+.task-item-vertical {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 2px;
 }
 
-.task-info .task-meta {
-  font-size: 12px;
+.task-content-area {
+  flex: 1;
+  width: 100%;
+}
+
+.task-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.task-title-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.task-body-text {
+  font-size: 13px;
   color: var(--text-muted);
-  margin-top: 4px;
+  line-height: 1.3;
+  margin-bottom: 2px;
+  word-break: break-word;
+}
+
+.task-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.8;
 }
 
 .empty-state {
@@ -408,11 +436,11 @@ body {
 
 /* Reminder Groups */
 .group-header {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
-  margin-top: 16px;
-  margin-bottom: 8px;
+  margin-top: 10px;
+  margin-bottom: 4px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -420,8 +448,8 @@ body {
 .reminder-item {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
-  padding: 8px 0;
+  font-size: 13px;
+  padding: 2px 0;
   align-items: center;
   border-bottom: 1px solid rgba(128, 128, 128, 0.1);
 }
@@ -502,8 +530,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 32px;
-  padding: 16px 0;
+  gap: 12px;
+  padding: 6px 0;
 }
 
 .next-prayer p {
@@ -515,25 +543,25 @@ body {
 }
 
 .next-prayer h2 {
-  font-size: 28px;
-  margin: 0 0 8px 0;
+  font-size: 18px;
+  margin: 0 0 4px 0;
   font-weight: 600;
 }
 
 .countdown {
   font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 18px;
+  font-size: 13px;
   color: var(--primary);
   font-weight: 600;
   background: rgba(0, 122, 255, 0.1);
-  padding: 4px 10px;
+  padding: 2px 8px;
   border-radius: 6px;
   display: inline-block;
 }
 
 .prayer-ring {
-  width: 90px;
-  height: 90px;
+  width: 60px;
+  height: 60px;
 }
 
 .prayer-ring svg {
@@ -658,7 +686,7 @@ body {
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+  gap: 2px;
   text-align: center;
 }
 
@@ -674,11 +702,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 11px;
   border-radius: 50%;
   cursor: default;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2px solid transparent;
+  border: 1.5px solid transparent;
 }
 
 .calendar-day.empty {

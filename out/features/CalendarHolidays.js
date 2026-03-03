@@ -11,7 +11,7 @@ class CalendarHolidays {
         setInterval(() => this.checkUpcomingHolidays(), 24 * 60 * 60 * 1000);
     }
     async loadHolidays() {
-        const config = vscode.workspace.getConfiguration('timeout');
+        const config = vscode.workspace.getConfiguration('heartbeat');
         const sourceFilePath = config.get('holidays.source');
         if (sourceFilePath && fs.existsSync(sourceFilePath)) {
             try {

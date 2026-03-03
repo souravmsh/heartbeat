@@ -27,15 +27,15 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
-            "timeout.sidebarView",
+            "heartbeat.sidebarView",
             sidebarProvider
         )
     );
 
     context.subscriptions.push(
-        vscode.commands.registerCommand('timeout.refresh', () => {
+        vscode.commands.registerCommand('heartbeat.refresh', () => {
             sidebarProvider.refresh();
-            vscode.window.showInformationMessage('Timeout dashboard refreshed!');
+            vscode.window.showInformationMessage('Heartbeat dashboard refreshed!');
         })
     );
 }

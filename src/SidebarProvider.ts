@@ -35,7 +35,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     this.sendState();
                     break;
                 case 'addTask':
-                    this.taskReminders.addTask(data.value.name, data.value.date, data.value.highPriority);
+                    this.taskReminders.addTask(data.value.title, data.value.content, data.value.date, data.value.highPriority);
                     this.sendState();
                     break;
                 case 'removeTask':
@@ -43,7 +43,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     this.sendState();
                     break;
                 case 'editTask':
-                    this.taskReminders.editTask(data.value.id, data.value.name, data.value.date, data.value.highPriority);
+                    this.taskReminders.editTask(data.value.id, data.value.title, data.value.content, data.value.date, data.value.highPriority);
                     this.sendState();
                     break;
                 case 'addBreak':
@@ -137,7 +137,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     }
 
     private async saveSettings(settings: any) {
-        const config = vscode.workspace.getConfiguration('timeout');
+        const config = vscode.workspace.getConfiguration('heartbeat');
         if (settings.type === 'calendar') {
             await config.update('holidays.source', settings.holidaysPath, vscode.ConfigurationTarget.Global);
             await config.update('calendar.weekends', settings.weekends, vscode.ConfigurationTarget.Global);
@@ -166,7 +166,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         const fileUri = await vscode.window.showOpenDialog(options);
         if (fileUri && fileUri[0]) {
-            const config = vscode.workspace.getConfiguration('timeout');
+            const config = vscode.workspace.getConfiguration('heartbeat');
             await config.update('holidays.source', fileUri[0].fsPath, vscode.ConfigurationTarget.Global);
             await this.calendarHolidays.loadHolidays();
 
@@ -185,7 +185,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     }
 
     private async updateCardOrder(order: string[]) {
-        await this._context.globalState.update('timeout.cardOrder', order);
+        await this._context.globalState.update('heartbeat.cardOrder', order);
     }
 
     private handleOverlayAction(action: string) {
@@ -235,7 +235,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     public sendState() {
         if (!this._view) return;
-        const config = vscode.workspace.getConfiguration('timeout');
+        const config = vscode.workspace.getConfiguration('heartbeat');
         this._view.webview.postMessage({
             type: 'updateState',
             value: {
@@ -247,7 +247,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 salahData: this.salahTime.getSalahData(),
                 holidaysPath: config.get<string>('holidays.source'),
                 weekends: config.get<number[]>('calendar.weekends'),
-                cardOrder: this._context.globalState.get<string[]>('timeout.cardOrder')
+                cardOrder: this._context.globalState.get<string[]>('heartbeat.cardOrder') || this._context.globalState.get<string[]>('timeout.cardOrder')
             }
         });
     }

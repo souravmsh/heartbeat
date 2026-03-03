@@ -12,7 +12,7 @@ export class CalendarHolidays {
     }
 
     public async loadHolidays() {
-        const config = vscode.workspace.getConfiguration('timeout');
+        const config = vscode.workspace.getConfiguration('heartbeat');
         const sourceFilePath = config.get<string>('holidays.source');
 
         if (sourceFilePath && fs.existsSync(sourceFilePath)) {

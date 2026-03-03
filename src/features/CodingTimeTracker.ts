@@ -7,15 +7,18 @@ export class CodingTimeTracker {
     private _saveInterval?: NodeJS.Timeout;
 
     constructor(private context: vscode.ExtensionContext) {
-        const savedTime = context.globalState.get<number>('takeABreak.codingTime');
-        const savedDateStr = context.globalState.get<string>('takeABreak.codingDate');
+        let savedTime = context.globalState.get<number>('heartbeat.codingTime');
+        if (savedTime === undefined) savedTime = context.globalState.get<number>('takeABreak.codingTime');
+
+        let savedDateStr = context.globalState.get<string>('heartbeat.codingDate');
+        if (savedDateStr === undefined) savedDateStr = context.globalState.get<string>('takeABreak.codingDate');
 
         const todayStr = new Date().toDateString();
 
         // Reset day if it's a new day
         if (savedDateStr !== todayStr) {
             this._codingTime = 0;
-            context.globalState.update('takeABreak.codingDate', todayStr);
+            context.globalState.update('heartbeat.codingDate', todayStr);
         } else if (savedTime) {
             this._codingTime = savedTime;
         }
@@ -27,7 +30,7 @@ export class CodingTimeTracker {
 
         // Persist every minute
         this._saveInterval = setInterval(() => {
-            this.context.globalState.update('takeABreak.codingTime', this._codingTime);
+            this.context.globalState.update('heartbeat.codingTime', this._codingTime);
         }, 60000);
     }
 
@@ -63,6 +66,6 @@ export class CodingTimeTracker {
     public resetTime() {
         this._codingTime = 0;
         this._lastActiveTime = Date.now();
-        this.context.globalState.update('takeABreak.codingTime', this._codingTime);
+        this.context.globalState.update('heartbeat.codingTime', this._codingTime);
     }
 }

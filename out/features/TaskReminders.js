@@ -8,19 +8,25 @@ class TaskReminders {
         this.loadTasks();
         setInterval(() => this.checkReminders(), 60000);
     }
-    addTask(name, date, highPriority) {
+    addTask(title, content, date, highPriority) {
+        if (!title.trim()) {
+            const taskCount = this._tasks.length + 1;
+            title = `Task ${taskCount}`;
+        }
         this._tasks.push({
             id: Date.now().toString(),
-            name,
+            title,
+            content,
             date,
             highPriority: !!highPriority
         });
         this.saveTasks();
     }
-    editTask(id, name, date, highPriority) {
+    editTask(id, title, content, date, highPriority) {
         const task = this._tasks.find(t => t.id === id);
         if (task) {
-            task.name = name;
+            task.title = title;
+            task.content = content;
             task.date = date;
             task.highPriority = !!highPriority;
             this.saveTasks();
@@ -34,13 +40,22 @@ class TaskReminders {
         return this._tasks;
     }
     loadTasks() {
-        const data = this.context.globalState.get('takeABreak.tasks.v3');
-        if (data) {
-            this._tasks = data;
+        let data = this.context.globalState.get('heartbeat.tasks.v3');
+        if (!data) {
+            data = this.context.globalState.get('takeABreak.tasks.v3');
+        }
+        if (data && Array.isArray(data)) {
+            this._tasks = data.map(task => ({
+                id: task.id || Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                title: task.title || task.name || 'Untitled Task',
+                content: task.content || '',
+                date: task.date,
+                highPriority: !!task.highPriority
+            }));
         }
     }
     saveTasks() {
-        this.context.globalState.update('takeABreak.tasks.v3', this._tasks);
+        this.context.globalState.update('heartbeat.tasks.v3', this._tasks);
     }
     checkReminders() {
         const now = new Date();

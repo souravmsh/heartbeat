@@ -6,14 +6,14 @@ export class SalahTime {
     constructor(private context: vscode.ExtensionContext) {
         this.updateCalculation();
         vscode.workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('timeout.salah.method')) {
+            if (e.affectsConfiguration('heartbeat.salah.method')) {
                 this.updateCalculation();
             }
         });
     }
 
     public updateCalculation() {
-        const config = vscode.workspace.getConfiguration('timeout');
+        const config = vscode.workspace.getConfiguration('heartbeat');
         const method = config.get<string>('salah.method');
         const offsets = config.get<any>('salah.offsets') || {};
 

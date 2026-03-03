@@ -7,7 +7,7 @@
   <link href="${styleResetUri}" rel="stylesheet">
   <link href="${styleVSCodeUri}" rel="stylesheet">
   <link href="${styleMainUri}" rel="stylesheet">
-  <title>Timeout</title>
+  <title>Heartbeat</title>
 </head>
 
 <body>
@@ -47,7 +47,9 @@
         </div>
 
         <div class="add-form hidden" id="addTaskForm">
-          <input type="text" id="newTaskTitle" class="ios-input" placeholder="Task name">
+          <input type="text" id="newTaskTitle" class="ios-input" placeholder="Task Title (Optional)">
+          <textarea id="newTaskContent" class="ios-input" placeholder="Task Content"
+            style="min-height: 50px; resize: vertical;"></textarea>
           <div class="input-row">
             <input type="date" id="newTaskDate" class="ios-input">
             <label class="ios-checkbox">
@@ -180,7 +182,8 @@
             </div>
           </div>
 
-          <button id="saveSalahSettingsBtn" class="primary-btn ios-btn small-btn" style="width: 100%; margin-top: 8px;">Save Settings</button>
+          <button id="saveSalahSettingsBtn" class="primary-btn ios-btn small-btn"
+            style="width: 100%; margin-top: 8px;">Save Settings</button>
         </div>
 
         <div class="salah-watch">

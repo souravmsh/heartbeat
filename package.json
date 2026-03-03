@@ -1,6 +1,6 @@
 {
-    "name": "timeout",
-    "displayName": "Timeout",
+    "name": "heartbeat",
+    "displayName": "Heartbeat",
     "description": "Helps developers manage productivity, health breaks, tasks, and daily activity.",
     "version": "1.0.0",
     "publisher": "souravmsh",
@@ -20,47 +20,47 @@
         "viewsContainers": {
             "activitybar": [
                 {
-                    "id": "timeout-sidebar",
-                    "title": "Timeout",
-                    "icon": "$(coffee)"
+                    "id": "heartbeat-sidebar",
+                    "title": "Heartbeat",
+                    "icon": "$(pulse)"
                 }
             ]
         },
         "views": {
-            "timeout-sidebar": [
+            "heartbeat-sidebar": [
                 {
                     "type": "webview",
-                    "id": "timeout.sidebarView",
-                    "name": "Timeout Dashboard",
-                    "icon": "$(coffee)"
+                    "id": "heartbeat.sidebarView",
+                    "name": "Heartbeat Dashboard",
+                    "icon": "$(pulse)"
                 }
             ]
         },
         "commands": [
             {
-                "command": "timeout.refresh",
-                "title": "Refresh Timeout Dashboard"
+                "command": "heartbeat.refresh",
+                "title": "Refresh Heartbeat Dashboard"
             }
         ],
         "configuration": {
-            "title": "Timeout",
+            "title": "Heartbeat",
             "properties": {
-                "timeout.breaks.interval": {
+                "heartbeat.breaks.interval": {
                     "type": "number",
                     "default": 60,
                     "description": "Interval for break reminders in minutes."
                 },
-                "timeout.salah.method": {
+                "heartbeat.salah.method": {
                     "type": "string",
                     "default": "MWL",
                     "description": "Calculation method for Salah times."
                 },
-                "timeout.holidays.source": {
+                "heartbeat.holidays.source": {
                     "type": "string",
                     "default": "",
                     "description": "Absolute path to holidays.json or holidays.csv."
                 },
-                "timeout.calendar.weekends": {
+                "heartbeat.calendar.weekends": {
                     "type": "array",
                     "items": {
                         "type": "number"
@@ -71,7 +71,7 @@
                     ],
                     "description": "Days of the week to treat as weekends (0=Sun, 1=Mon, ..., 6=Sat)."
                 },
-                "timeout.salah.offsets": {
+                "heartbeat.salah.offsets": {
                     "type": "object",
                     "default": {
                         "Fajr": 0,

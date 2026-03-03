@@ -18,10 +18,10 @@ function activate(context) {
     const holidays = new CalendarHolidays_1.CalendarHolidays();
     // Register the Sidebar Panel
     const sidebarProvider = new SidebarProvider_1.SidebarProvider(context.extensionUri, context, taskReminders, breakReminders, codingTracker, salahTime, holidays);
-    context.subscriptions.push(vscode.window.registerWebviewViewProvider("timeout.sidebarView", sidebarProvider));
-    context.subscriptions.push(vscode.commands.registerCommand('timeout.refresh', () => {
+    context.subscriptions.push(vscode.window.registerWebviewViewProvider("heartbeat.sidebarView", sidebarProvider));
+    context.subscriptions.push(vscode.commands.registerCommand('heartbeat.refresh', () => {
         sidebarProvider.refresh();
-        vscode.window.showInformationMessage('Timeout dashboard refreshed!');
+        vscode.window.showInformationMessage('Heartbeat dashboard refreshed!');
     }));
 }
 function deactivate() { }

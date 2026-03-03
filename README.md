@@ -1,6 +1,6 @@
-# Timeout - VS Code Extension
+# Heartbeat - VS Code Extension
 
-Timeout is a comprehensive Visual Studio Code extension designed to help developers manage productivity, health breaks, tasks, and daily activity directly from their editor.
+Heartbeat is a comprehensive Visual Studio Code extension designed to help developers manage productivity, health breaks, tasks, and daily activity directly from their editor.
 
 ## Features
 
@@ -13,13 +13,13 @@ Timeout is a comprehensive Visual Studio Code extension designed to help develop
 
 ## Usage
 
-1. Click on the **Timeout** clock icon in the Activity Bar on the left side of your VS Code window.
+1. Click on the **Heartbeat** icon (pulse) in the Activity Bar on the left side of your VS Code window.
 2. The dashboard will open, showing your tasks, break reminders, coding time, Salah watch, and calendar.
 3. **Configure Settings:** 
-   Go to **Preferences: Open Settings** (or press `Ctrl+,`) and search for `Timeout` to customize:
-   - `timeout.breaks.interval`: The interval for break reminders in minutes.
-   - `timeout.holidays.source`: Absolute path to your custom `holidays.json` or `holidays.csv`.
-   - `timeout.salah.method`: Method for calculating Salah times.
+   Go to **Preferences: Open Settings** (or press `Ctrl+,`) and search for `Heartbeat` to customize:
+   - `heartbeat.breaks.interval`: The interval for break reminders in minutes.
+   - `heartbeat.holidays.source`: Absolute path to your custom `holidays.json` or `holidays.csv`.
+   - `heartbeat.salah.method`: Method for calculating Salah times.
 
 ## How to Build from Git
 
@@ -34,10 +34,10 @@ Follow these steps to clone the repository, run the extension locally, or packag
 
 ```bash
 git clone <repository-url>
-cd timeout
+cd heartbeat
 ```
 
-*(Note: If you have already created the folder, just navigate to it: `cd path/to/timeout`)*
+*(Note: If you have already created the folder, just navigate to it: `cd path/to/heartbeat`)*
 
 ### 2. Install Dependencies
 
@@ -68,7 +68,7 @@ If you want to install it permanently or share it with others, you can create a 
    vsce package
    ```
    *Note: If `vsce` warns about a missing `repository` field in `package.json`, you can safely say "yes" (Y) to continue anyway.*
-3. A file named `timeout-1.0.0.vsix` will be generated in your folder.
+3. A file named `heartbeat-1.0.0.vsix` will be generated in your folder.
 4. **To install it:** Open your regular VS Code, go to the **Extensions view** (`Ctrl+Shift+X`), click the **`...`** (more) menu in the top right of the sidebar, select **Install from VSIX...**, and then select the generated file.
 
 ## License

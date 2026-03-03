@@ -8,13 +8,13 @@ class SalahTime {
         this.salahData = {};
         this.updateCalculation();
         vscode.workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('timeout.salah.method')) {
+            if (e.affectsConfiguration('heartbeat.salah.method')) {
                 this.updateCalculation();
             }
         });
     }
     updateCalculation() {
-        const config = vscode.workspace.getConfiguration('timeout');
+        const config = vscode.workspace.getConfiguration('heartbeat');
         const method = config.get('salah.method');
         const offsets = config.get('salah.offsets') || {};
         const baseTimes = {

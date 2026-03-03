@@ -39,13 +39,16 @@ class BreakReminders {
         return this._breaks;
     }
     loadBreaks() {
-        const data = this.context.globalState.get('takeABreak.breaks');
+        let data = this.context.globalState.get('heartbeat.breaks');
+        if (!data) {
+            data = this.context.globalState.get('takeABreak.breaks');
+        }
         if (data) {
             this._breaks = data;
         }
     }
     saveBreaks() {
-        this.context.globalState.update('takeABreak.breaks', this._breaks);
+        this.context.globalState.update('heartbeat.breaks', this._breaks);
     }
     startReminders() {
         // Clear existing

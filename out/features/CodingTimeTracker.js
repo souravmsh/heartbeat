@@ -8,13 +8,17 @@ class CodingTimeTracker {
         this._codingTime = 0;
         this._lastActiveTime = Date.now();
         this._timerPaused = false;
-        const savedTime = context.globalState.get('takeABreak.codingTime');
-        const savedDateStr = context.globalState.get('takeABreak.codingDate');
+        let savedTime = context.globalState.get('heartbeat.codingTime');
+        if (savedTime === undefined)
+            savedTime = context.globalState.get('takeABreak.codingTime');
+        let savedDateStr = context.globalState.get('heartbeat.codingDate');
+        if (savedDateStr === undefined)
+            savedDateStr = context.globalState.get('takeABreak.codingDate');
         const todayStr = new Date().toDateString();
         // Reset day if it's a new day
         if (savedDateStr !== todayStr) {
             this._codingTime = 0;
-            context.globalState.update('takeABreak.codingDate', todayStr);
+            context.globalState.update('heartbeat.codingDate', todayStr);
         }
         else if (savedTime) {
             this._codingTime = savedTime;
@@ -22,7 +26,7 @@ class CodingTimeTracker {
         context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(() => this.updateActivity()), vscode.window.onDidChangeActiveTextEditor(() => this.updateActivity()));
         // Persist every minute
         this._saveInterval = setInterval(() => {
-            this.context.globalState.update('takeABreak.codingTime', this._codingTime);
+            this.context.globalState.update('heartbeat.codingTime', this._codingTime);
         }, 60000);
     }
     updateActivity() {
@@ -53,7 +57,7 @@ class CodingTimeTracker {
     resetTime() {
         this._codingTime = 0;
         this._lastActiveTime = Date.now();
-        this.context.globalState.update('takeABreak.codingTime', this._codingTime);
+        this.context.globalState.update('heartbeat.codingTime', this._codingTime);
     }
 }
 exports.CodingTimeTracker = CodingTimeTracker;

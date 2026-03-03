@@ -41,6 +41,7 @@
             editingTaskId = null;
             document.getElementById('addTaskBtn').textContent = 'Add Task';
             document.getElementById('newTaskTitle').value = '';
+            document.getElementById('newTaskContent').value = '';
             document.getElementById('newTaskDate').value = '';
             document.getElementById('newTaskHighPriority').checked = false;
         }
@@ -68,19 +69,21 @@
 
     // Sending Messages
     document.getElementById('addTaskBtn')?.addEventListener('click', () => {
-        const name = document.getElementById('newTaskTitle').value;
+        const title = document.getElementById('newTaskTitle').value;
+        const content = document.getElementById('newTaskContent').value;
         const date = document.getElementById('newTaskDate').value;
         const highPriority = document.getElementById('newTaskHighPriority').checked;
 
-        if (name) {
+        if (content || title) {
             if (editingTaskId) {
-                vscode.postMessage({ type: 'editTask', value: { id: editingTaskId, name, date, highPriority } });
+                vscode.postMessage({ type: 'editTask', value: { id: editingTaskId, title, content, date, highPriority } });
                 editingTaskId = null;
                 document.getElementById('addTaskBtn').textContent = 'Add Task';
             } else {
-                vscode.postMessage({ type: 'addTask', value: { name, date, highPriority } });
+                vscode.postMessage({ type: 'addTask', value: { title, content, date, highPriority } });
             }
             document.getElementById('newTaskTitle').value = '';
+            document.getElementById('newTaskContent').value = '';
             document.getElementById('newTaskDate').value = '';
             document.getElementById('newTaskHighPriority').checked = false;
             document.getElementById('addTaskForm').classList.add('hidden');
@@ -230,12 +233,13 @@
         const task = state.tasks.find(t => t.id === id);
         if (task) {
             editingTaskId = id;
-            document.getElementById('newTaskTitle').value = task.name;
+            document.getElementById('newTaskTitle').value = task.title;
+            document.getElementById('newTaskContent').value = task.content;
             document.getElementById('newTaskDate').value = task.date || '';
             document.getElementById('newTaskHighPriority').checked = task.highPriority;
             document.getElementById('addTaskBtn').textContent = 'Update Task';
             document.getElementById('addTaskForm').classList.remove('hidden');
-            document.getElementById('newTaskTitle').focus();
+            document.getElementById('newTaskContent').focus();
         }
     };
 
@@ -298,16 +302,25 @@
 
         sortedTasks.forEach(task => {
             const li = document.createElement('li');
+            li.className = 'task-item-vertical';
             let priorityTag = task.highPriority ? `<span class="tag high-priority">High</span>` : '';
             let dateMeta = task.date ? `Due: ${task.date}` : '';
 
+            // Robust property access
+            const safeContent = (task.content || '').replace(/'/g, "\\'");
+            const copyStr = safeContent;
+
             li.innerHTML = `
-                <div class="task-info">
-                  <div class="task-name">${task.name} ${priorityTag}</div>
+                <div class="task-content-area">
+                  <div class="task-header-row">
+                    <span class="task-title-text">${task.title || task.name || 'Untitled'}</span>
+                    ${priorityTag}
+                  </div>
+                  <div class="task-body-text">${task.content || ''}</div>
                   <div class="task-meta">${dateMeta}</div>
                 </div>
-                <div class="task-actions" style="display:flex; gap:8px;">
-                    <button class="icon-btn action-icon" onclick="copyTask('${task.name.replace(/'/g, "\\'")}')" title="Copy">
+                <div class="task-actions" style="display:flex; gap:8px; align-items: flex-start;">
+                    <button class="icon-btn action-icon" onclick="copyTask('${copyStr}')" title="Copy">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/></svg>
                     </button>
                     <button class="icon-btn action-icon" onclick="editTask('${task.id}')" title="Edit">
