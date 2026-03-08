@@ -10,7 +10,7 @@ class TaskReminders {
         this.loadTasks();
         setInterval(() => this.checkReminders(), 30000); // Check every 30s
     }
-    addTask(title, content, date, highPriority, time) {
+    addTask(title, content, date, highPriority, time, secret) {
         if (!title.trim()) {
             const taskCount = this._tasks.length + 1;
             title = `Task ${taskCount}`;
@@ -21,11 +21,12 @@ class TaskReminders {
             content,
             date,
             time,
-            highPriority: !!highPriority
+            highPriority: !!highPriority,
+            secret: !!secret
         });
         this.saveTasks();
     }
-    editTask(id, title, content, date, highPriority, time) {
+    editTask(id, title, content, date, highPriority, time, secret) {
         const task = this._tasks.find(t => t.id === id);
         if (task) {
             task.title = title;
@@ -33,6 +34,7 @@ class TaskReminders {
             task.date = date;
             task.time = time;
             task.highPriority = !!highPriority;
+            task.secret = !!secret;
             this.saveTasks();
         }
     }
@@ -56,7 +58,8 @@ class TaskReminders {
                 content: task.content || '',
                 date: task.date,
                 time: task.time,
-                highPriority: !!task.highPriority
+                highPriority: !!task.highPriority,
+                secret: !!task.secret
             }));
         }
     }

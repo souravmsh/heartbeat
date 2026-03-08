@@ -5,6 +5,7 @@ export interface ReminderTask {
     date?: string;
     time?: string; // HH:mm
     highPriority: boolean;
+    secret?: boolean;
 }
 
 import * as vscode from 'vscode';
@@ -21,7 +22,7 @@ export class TaskReminders {
         setInterval(() => this.checkReminders(), 30000); // Check every 30s
     }
 
-    addTask(title: string, content: string, date?: string, highPriority?: boolean, time?: string) {
+    addTask(title: string, content: string, date?: string, highPriority?: boolean, time?: string, secret?: boolean) {
         if (!title.trim()) {
             const taskCount = this._tasks.length + 1;
             title = `Task ${taskCount}`;
@@ -32,12 +33,13 @@ export class TaskReminders {
             content,
             date,
             time,
-            highPriority: !!highPriority
+            highPriority: !!highPriority,
+            secret: !!secret
         });
         this.saveTasks();
     }
 
-    editTask(id: string, title: string, content: string, date?: string, highPriority?: boolean, time?: string) {
+    editTask(id: string, title: string, content: string, date?: string, highPriority?: boolean, time?: string, secret?: boolean) {
         const task = this._tasks.find(t => t.id === id);
         if (task) {
             task.title = title;
@@ -45,6 +47,7 @@ export class TaskReminders {
             task.date = date;
             task.time = time;
             task.highPriority = !!highPriority;
+            task.secret = !!secret;
             this.saveTasks();
         }
     }
@@ -72,7 +75,8 @@ export class TaskReminders {
                 content: task.content || '',
                 date: task.date,
                 time: task.time,
-                highPriority: !!task.highPriority
+                highPriority: !!task.highPriority,
+                secret: !!task.secret
             }));
         }
     }

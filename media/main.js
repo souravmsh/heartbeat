@@ -10,7 +10,8 @@
         holidays: [],
         salahData: { method: "MWL", times: {} },
         currentMonth: new Date().getMonth(),
-        currentYear: new Date().getFullYear()
+        currentYear: new Date().getFullYear(),
+        taskPage: 0
     };
 
     // Tab Navigation
@@ -46,6 +47,7 @@
             document.getElementById('newTaskDate').value = '';
             document.getElementById('newTaskTime').value = '';
             document.getElementById('newTaskHighPriority').checked = false;
+            document.getElementById('newTaskSecret').checked = false;
         }
     });
 
@@ -116,20 +118,22 @@
         const date = document.getElementById('newTaskDate').value;
         const time = document.getElementById('newTaskTime').value;
         const highPriority = document.getElementById('newTaskHighPriority').checked;
+        const secret = document.getElementById('newTaskSecret').checked;
 
         if (content || title) {
             if (editingTaskId) {
-                vscode.postMessage({ type: 'editTask', value: { id: editingTaskId, title, content, date, time, highPriority } });
+                vscode.postMessage({ type: 'editTask', value: { id: editingTaskId, title, content, date, time, highPriority, secret } });
                 editingTaskId = null;
                 document.getElementById('addTaskBtn').textContent = 'Add Task';
             } else {
-                vscode.postMessage({ type: 'addTask', value: { title, content, date, time, highPriority } });
+                vscode.postMessage({ type: 'addTask', value: { title, content, date, time, highPriority, secret } });
             }
             document.getElementById('newTaskTitle').value = '';
             document.getElementById('newTaskContent').value = '';
             document.getElementById('newTaskDate').value = '';
             document.getElementById('newTaskTime').value = '';
             document.getElementById('newTaskHighPriority').checked = false;
+            document.getElementById('newTaskSecret').checked = false;
             document.getElementById('addTaskForm').classList.add('hidden');
         }
     });
@@ -302,6 +306,7 @@
             document.getElementById('newTaskDate').value = task.date || '';
             document.getElementById('newTaskTime').value = task.time || '';
             document.getElementById('newTaskHighPriority').checked = task.highPriority;
+            document.getElementById('newTaskSecret').checked = !!task.secret;
             document.getElementById('addTaskBtn').textContent = 'Update Task';
             document.getElementById('addTaskForm').classList.remove('hidden');
             document.getElementById('newTaskContent').focus();
@@ -311,6 +316,14 @@
     window.copyTask = (name) => {
         navigator.clipboard.writeText(name);
     };
+
+    function maskSecretContent(text) {
+        if (!text) return '';
+        if (text.length <= 5) {
+            return '*'.repeat(text.length);
+        }
+        return text.substring(0, 3) + '***' + text.substring(text.length - 2);
+    }
 
     window.changeMonth = (offset) => {
         let newMonth = state.currentMonth + offset;
@@ -366,15 +379,38 @@
         list.innerHTML = '';
         const sortedTasks = [...state.tasks].sort((a, b) => (b.highPriority ? 1 : 0) - (a.highPriority ? 1 : 0));
 
-        sortedTasks.forEach(task => {
+        const itemsPerPage = 5;
+        const totalItems = sortedTasks.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+        if (state.taskPage >= totalPages && totalPages > 0) {
+            state.taskPage = totalPages - 1;
+        }
+
+        const start = state.taskPage * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pagedTasks = sortedTasks.slice(start, end);
+
+        pagedTasks.forEach(task => {
             const li = document.createElement('li');
             li.className = 'task-item-vertical';
             let priorityTag = task.highPriority ? `<span class="tag high-priority">High</span>` : '';
-            let dateMeta = task.date ? `Due: ${task.date}` : '';
+
+            let dateMeta = task.date ? `<div class="task-meta-row text-warning">Due: ${task.date}</div>` : '';
+            let timeMeta = task.time ? `<div class="task-meta-row text-taskList">Time: ${task.time}</div>` : '';
 
             // Robust property access
             const safeContent = (task.content || '').replace(/'/g, "\\'");
             const copyStr = safeContent;
+
+            let displayContent = task.secret ?
+                maskSecretContent(task.content || '') :
+                (task.content || '');
+
+            const maxChars = 80;
+            if (displayContent.length > maxChars) {
+                displayContent = displayContent.substring(0, maxChars) + '...';
+            }
 
             li.innerHTML = `
                 <div class="task-content-area">
@@ -382,10 +418,13 @@
                     <span class="task-title-text">${task.title || task.name || 'Untitled'}</span>
                     ${priorityTag}
                   </div>
-                  <div class="task-body-text">${task.content || ''}</div>
-                  <div class="task-meta">${dateMeta}${task.time ? ' @ ' + task.time : ''}</div>
+                  <div class="task-body-text">${displayContent}</div>
+                  <div class="task-meta">
+                    ${dateMeta}
+                    ${timeMeta}
+                  </div>
                 </div>
-                <div class="task-actions" style="display:flex; gap:8px; align-items: flex-start;">
+                <div class="task-actions">
                     <button class="icon-btn action-icon" onclick="copyTask('${copyStr}')" title="Copy">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/></svg>
                     </button>
@@ -393,12 +432,59 @@
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>
                     </button>
                     <button class="icon-btn action-icon" onclick="removeTask('${task.id}')" title="Remove">
-                        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                           <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                           <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                        </svg>
                     </button>
                 </div>
             `;
             list.appendChild(li);
         });
+
+        renderTaskPagination(totalPages);
+    }
+
+    function renderTaskPagination(totalPages) {
+        const pagContainer = document.getElementById('taskPagination');
+        if (!pagContainer) return;
+
+        if (totalPages <= 1) {
+            pagContainer.classList.add('hidden');
+            return;
+        }
+
+        pagContainer.classList.remove('hidden');
+        pagContainer.innerHTML = '';
+
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'nav-btn';
+        prevBtn.textContent = '❮';
+        prevBtn.disabled = state.taskPage === 0;
+        prevBtn.onclick = () => {
+            if (state.taskPage > 0) {
+                state.taskPage--;
+                renderTasks();
+            }
+        };
+
+        const pageLabel = document.createElement('span');
+        pageLabel.textContent = `Page ${state.taskPage + 1} of ${totalPages}`;
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'nav-btn';
+        nextBtn.textContent = '❯';
+        nextBtn.disabled = state.taskPage >= totalPages - 1;
+        nextBtn.onclick = () => {
+            if (state.taskPage < totalPages - 1) {
+                state.taskPage++;
+                renderTasks();
+            }
+        };
+
+        pagContainer.appendChild(prevBtn);
+        pagContainer.appendChild(pageLabel);
+        pagContainer.appendChild(nextBtn);
     }
 
     function renderReminders() {
@@ -732,6 +818,13 @@
             el.classList.remove('show');
             setTimeout(() => el.remove(), 400);
         }
+
+        // Auto-close after 5 minutes (300,000 ms)
+        setTimeout(() => {
+            if (toast && toast.parentElement) {
+                closeToast(toast);
+            }
+        }, 300000);
     }
 
 }());

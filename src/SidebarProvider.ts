@@ -37,7 +37,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     this.sendState();
                     break;
                 case 'addTask':
-                    this.taskReminders.addTask(data.value.title, data.value.content, data.value.date, data.value.highPriority, data.value.time);
+                    this.taskReminders.addTask(data.value.title, data.value.content, data.value.date, data.value.highPriority, data.value.time, data.value.secret);
                     this.sendState();
                     break;
                 case 'removeTask':
@@ -45,7 +45,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     this.sendState();
                     break;
                 case 'editTask':
-                    this.taskReminders.editTask(data.value.id, data.value.title, data.value.content, data.value.date, data.value.highPriority, data.value.time);
+                    this.taskReminders.editTask(data.value.id, data.value.title, data.value.content, data.value.date, data.value.highPriority, data.value.time, data.value.secret);
                     this.sendState();
                     break;
                 case 'addBreak':

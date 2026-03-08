@@ -2,7 +2,7 @@
     "name": "heartbeat",
     "displayName": "Heartbeat",
     "description": "Helps developers manage productivity, health breaks, tasks, and daily activity.",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "publisher": "souravmsh",
     "repository": {
         "type": "git",

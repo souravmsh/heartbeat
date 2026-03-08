@@ -129,12 +129,12 @@
             <button class="primary-btn" onclick="handleAction('snooze')">Snooze 5m</button>
         </div>
 
-        <div class="countdown" id="autoDismiss">Auto-dismissing in 60s</div>
+        <div class="countdown" id="autoDismiss">Auto-dismissing in 5m</div>
     </div>
 
     <script>
         const vscode = acquireVsCodeApi();
-        let remaining = 60;
+        let remaining = 300;
 
         // Update data from extension
         window.addEventListener('message', event => {
@@ -150,7 +150,12 @@
         // Auto-dismiss countdown
         const interval = setInterval(() => {
             remaining--;
-            document.getElementById('autoDismiss').textContent = `Auto-dismissing in ${remaining}s`;
+            if (remaining > 60) {
+                const mins = Math.ceil(remaining / 60);
+                document.getElementById('autoDismiss').textContent = `Auto-dismissing in ${mins}m`;
+            } else {
+                document.getElementById('autoDismiss').textContent = `Auto-dismissing in ${remaining}s`;
+            }
             if (remaining <= 0) {
                 clearInterval(interval);
                 handleAction('dismiss');

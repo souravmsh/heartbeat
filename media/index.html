@@ -54,19 +54,23 @@
             <input type="date" id="newTaskDate" class="ios-input" placeholder="Date">
             <input type="time" id="newTaskTime" class="ios-input" placeholder="Time">
           </div>
-          <div class="input-row">
-            <label class="ios-checkbox">
-              <input type="checkbox" id="newTaskHighPriority">
-              <span class="checkmark"></span>
-              High Priority
-            </label>
-          </div>
-          <button id="addTaskBtn" class="primary-btn ios-btn">Add Task</button>
+          <label class="ios-checkbox" style="margin-bottom:5px;">
+            <input type="checkbox" id="newTaskHighPriority">
+            <span class="checkmark"></span>
+            High Priority
+          </label>
+          <label class="ios-checkbox">
+            <input type="checkbox" id="newTaskSecret">
+            <span class="checkmark"></span>
+            Secret
+          </label>
+          <button id="addTaskBtn" class="primary-btn ios-btn" style="margin-top: 10px; width: 100%;">Add Task</button>
         </div>
 
         <ul class="task-list ios-list" id="taskList">
           <!-- Injected by JS -->
         </ul>
+        <div id="taskPagination" class="pagination-controls hidden"></div>
         <div id="emptyTasks" class="empty-state">No tasks to show. You're all caught up! ✨</div>
       </section>
 
