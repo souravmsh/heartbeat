@@ -11,8 +11,12 @@
         salahData: { method: "MWL", times: {} },
         currentMonth: new Date().getMonth(),
         currentYear: new Date().getFullYear(),
-        taskPage: 0
+        taskPage: 0,
+        videoSource: 'youtube',
+        videoLocalPath: ''
     };
+
+    let plyrPlayer = null;
 
     // Tab Navigation
     document.querySelectorAll('.segment').forEach(btn => {
@@ -29,7 +33,9 @@
                 }
             });
             // show active
-            document.getElementById(e.target.dataset.target).classList.add('active');
+            const target = document.getElementById(e.target.dataset.target);
+            target.classList.add('active');
+
         });
     });
 
@@ -83,6 +89,30 @@
 
     document.getElementById('showGeneralSettingsBtn')?.addEventListener('click', () => {
         document.getElementById('generalSettingsForm').classList.toggle('hidden');
+    });
+
+    document.getElementById('showPlayerSettingsBtn')?.addEventListener('click', () => {
+        document.getElementById('playerSettingsForm').classList.toggle('hidden');
+    });
+
+    document.getElementById('playerVideoSource')?.addEventListener('change', (e) => {
+        const localSettings = document.getElementById('playerLocalSettings');
+        if (e.target.value === 'local') {
+            localSettings.classList.remove('hidden');
+        } else {
+            localSettings.classList.add('hidden');
+        }
+    });
+
+    document.getElementById('browsePlayerVideoBtn')?.addEventListener('click', () => {
+        vscode.postMessage({ type: 'browseVideoDirectory' });
+    });
+
+    document.getElementById('savePlayerSettingsBtn')?.addEventListener('click', () => {
+        const videoSource = document.getElementById('playerVideoSource').value;
+        const videoLocalPath = document.getElementById('playerLocalPath').value;
+        vscode.postMessage({ type: 'saveSettings', value: { type: 'video', videoSource, videoLocalPath } });
+        document.getElementById('playerSettingsForm').classList.add('hidden');
     });
 
     document.getElementById('browseCentralBtn')?.addEventListener('click', () => {
@@ -275,6 +305,7 @@
                 if (card.classList.contains('widget-reminders')) return 'reminders';
                 if (card.classList.contains('widget-calendar')) return 'calendar';
                 if (card.classList.contains('widget-salah')) return 'salah';
+                if (card.classList.contains('widget-youtube')) return 'youtube';
                 if (card.classList.contains('widget-settings')) return 'settings';
                 return '';
             }).filter(Boolean);
@@ -363,6 +394,7 @@
             'reminders': grid.querySelector('.widget-reminders'),
             'calendar': grid.querySelector('.widget-calendar'),
             'salah': grid.querySelector('.widget-salah'),
+            'youtube': grid.querySelector('.widget-youtube'),
             'settings': grid.querySelector('.widget-settings')
         };
 
@@ -659,6 +691,35 @@
             const input = document.getElementById('settingSchedulePreviewTime');
             if (input) input.value = state.schedulePreviewTime;
         }
+
+        if (state.videoSource) {
+            const sel = document.getElementById('playerVideoSource');
+            if (sel) {
+                sel.value = state.videoSource;
+                const localSettings = document.getElementById('playerLocalSettings');
+                if (state.videoSource === 'local') {
+                    localSettings.classList.remove('hidden');
+                    document.getElementById('ytSearchContainer').classList.add('hidden');
+                    document.getElementById('localVideoContainer').classList.remove('hidden');
+                    document.getElementById('localPlaylist').classList.remove('hidden');
+                    document.getElementById('ytPlayer').classList.add('hidden');
+                    document.getElementById('localPlayer').classList.remove('hidden');
+                    vscode.postMessage({ type: 'fetchLocalVideos' });
+                } else {
+                    localSettings.classList.add('hidden');
+                    document.getElementById('ytSearchContainer').classList.remove('hidden');
+                    document.getElementById('localVideoContainer').classList.add('hidden');
+                    document.getElementById('localPlaylist').classList.add('hidden');
+                    document.getElementById('ytPlayer').classList.remove('hidden');
+                    document.getElementById('localPlayer').classList.add('hidden');
+                }
+            }
+        }
+
+        if (state.videoLocalPath !== undefined) {
+            const input = document.getElementById('playerLocalPath');
+            if (input) input.value = state.videoLocalPath;
+        }
     }
 
     function renderSalah() {
@@ -826,5 +887,83 @@
             }
         }, 300000);
     }
+
+    // YouTube Search & Player Logic
+    const ytInput = document.getElementById('ytSearchInput');
+    const ytResults = document.getElementById('ytSearchResults');
+    let ytSearchTimeout = null;
+
+    ytInput?.addEventListener('input', (e) => {
+        const query = e.target.value;
+        clearTimeout(ytSearchTimeout);
+        if (!query || query.length < 2) {
+            ytResults?.classList.add('hidden');
+            return;
+        }
+
+        ytSearchTimeout = setTimeout(() => {
+            vscode.postMessage({ type: 'youtubeSearch', value: query });
+        }, 600);
+    });
+
+    // Close results when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.yt-search-container')) {
+            ytResults?.classList.add('hidden');
+        }
+    });
+
+    window.selectVideo = (id, title) => {
+        const placeholder = document.getElementById('ytPlaceholder');
+        const playerDiv = document.getElementById('ytPlayer');
+
+        if (placeholder) placeholder.classList.add('hidden');
+
+        if (plyrPlayer) {
+            plyrPlayer.destroy();
+            plyrPlayer = null;
+        }
+
+        if (playerDiv) {
+            playerDiv.innerHTML = `<div id="youtube-player" data-plyr-provider="youtube" data-plyr-embed-id="${id}"></div>`;
+            plyrPlayer = new Plyr('#youtube-player', {
+                autoplay: true,
+                hideControls: false
+            });
+        }
+        ytResults?.classList.add('hidden');
+        if (ytInput) ytInput.value = '';
+    };
+
+    function renderYoutubeResults(videos) {
+        if (!ytResults) return;
+        ytResults.innerHTML = '';
+        if (!videos || videos.length === 0) {
+            ytResults.classList.add('hidden');
+            return;
+        }
+
+        videos.forEach(v => {
+            const div = document.createElement('div');
+            div.className = 'yt-result-item';
+            div.onclick = () => selectVideo(v.id, v.title);
+            div.innerHTML = `
+                <img src="${v.thumbnail}" alt="${v.title}">
+                <div class="yt-info">
+                    <div class="yt-title">${v.title}</div>
+                    <div class="yt-channel">${v.channel} • ${v.duration}</div>
+                </div>
+            `;
+            ytResults.appendChild(div);
+        });
+        ytResults.classList.remove('hidden');
+    }
+
+    // Add to main message handler logic if needed or just add listener
+    window.addEventListener('message', event => {
+        if (event.data.type === 'youtubeSearchResults') {
+            renderYoutubeResults(event.data.value);
+        }
+    });
 
 }());

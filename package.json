@@ -2,7 +2,7 @@
     "name": "heartbeat",
     "displayName": "Heartbeat",
     "description": "Helps developers manage productivity, health breaks, tasks, and daily activity.",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "publisher": "souravmsh",
     "repository": {
         "type": "git",
@@ -90,6 +90,20 @@
                     "type": "string",
                     "default": "",
                     "description": "Path to a central JSON file where settings and data are stored/synced."
+                },
+                "heartbeat.video.source": {
+                    "type": "string",
+                    "enum": [
+                        "youtube",
+                        "local"
+                    ],
+                    "default": "youtube",
+                    "description": "Video player source (YouTube or a Local directory)."
+                },
+                "heartbeat.video.localPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Absolute path to the local directory containing video files."
                 }
             }
         }
@@ -105,5 +119,9 @@
         "@types/node": "^18.0.0",
         "@types/vscode": "^1.80.0",
         "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "plyr": "^3.8.4",
+        "yt-search": "^2.13.1"
     }
 }

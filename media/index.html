@@ -7,13 +7,16 @@
   <link href="${styleResetUri}" rel="stylesheet">
   <link href="${styleVSCodeUri}" rel="stylesheet">
   <link href="${styleMainUri}" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   <title>Heartbeat</title>
 </head>
 
 <body>
   <div id="toast-container" class="toast-container top-right"></div>
 
-
+  <div class="segmented-control">
+    <button class="segment active" data-target="tab-dashboard">Dashboard</button>
+  </div>
 
   <!-- tab: Dashboard -->
   <div id="tab-dashboard" class="tab-content active">
@@ -238,6 +241,60 @@
           <!-- Injected by JS -->
         </ul>
       </section>
+
+      <!-- Media Player Widget -->
+      <section class="card widget-youtube" draggable="true">
+        <div class="header">
+          <span class="title" id="mediaPlayerTitle">Media Player</span>
+          <div class="yt-search-container" id="ytSearchContainer">
+            <input type="text" id="ytSearchInput" class="ios-input" placeholder="Search videos...">
+            <div id="ytSearchResults" class="dropdown-results hidden"></div>
+          </div>
+          <div id="localVideoContainer" class="hidden" style="flex: 1; margin-left: 10px;">
+            <span style="font-size: 11px; color: var(--text-muted);" id="localVideoCount">0 videos</span>
+          </div>
+          <button id="showPlayerSettingsBtn" class="icon-btn action-icon" style="margin-left:auto;">⚙</button>
+        </div>
+
+        <div class="add-form hidden" id="playerSettingsForm">
+          <div class="setting-group">
+            <label class="setting-label">Video Source</label>
+            <select id="playerVideoSource" class="ios-select">
+              <option value="youtube">YouTube</option>
+              <option value="local">Local Directory</option>
+            </select>
+          </div>
+          <div id="playerLocalSettings" class="hidden" style="margin-top: 10px;">
+            <label class="setting-label">Local Videos Path</label>
+            <div class="input-row">
+              <input type="text" id="playerLocalPath" class="ios-input" placeholder="/path/to/videos">
+              <button id="browsePlayerVideoBtn" class="secondary-btn ios-btn compact-btn">Browse</button>
+            </div>
+          </div>
+          <button id="savePlayerSettingsBtn" class="primary-btn ios-btn" style="width: 100%; margin-top: 10px;">Save
+            Settings</button>
+        </div>
+        <div class="yt-player-resizable-container">
+          <div class="yt-player-container">
+            <div id="ytPlayer"></div>
+            <video id="localPlayer" class="hidden" controls
+              style="width: 100%; height: 100%; border-radius: 8px;"></video>
+            <div id="ytPlaceholder" class="player-placeholder">
+              <div class="placeholder-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                </svg>
+              </div>
+              <p id="playerPlaceholderText">Search to play</p>
+            </div>
+          </div>
+        </div>
+        <div id="localPlaylist" class="hidden" style="max-height: 150px; overflow-y: auto; margin-top: 10px;">
+          <ul class="ios-list" id="playlistItems"></ul>
+        </div>
+      </section>
+
       <!-- 6. Settings Management -->
       <section class="card widget-settings" draggable="true">
         <div class="header">
@@ -267,11 +324,11 @@
               Triggers a summary of tomorrow's meetings at this time today.
             </p>
           </div>
-          <button id="saveGeneralSettingsBtn" class="primary-btn ios-btn compact-btn"
-            style="width: 100%; margin-top: 8px;">Save
-            General Settings</button>
-        </div>
 
+          <button id="saveGeneralSettingsBtn" class="primary-btn ios-btn compact-btn"
+            style="width: 100%; margin-top: 8px;">Save General Settings</button>
+
+        </div>
         <div class="settings-actions" style="display: flex; flex-direction: row; gap: 8px; margin-top: 10px;">
           <button id="exportSettingsBtn" class="primary-btn ios-btn compact-btn" style="width: 100%;">
             <span style="display: flex; align-items: center; justify-content: center; gap: 8px;">
@@ -300,6 +357,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
   <script src="${scriptUri}"></script>
 </body>
 

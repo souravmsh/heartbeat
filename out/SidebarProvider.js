@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SidebarProvider = void 0;
 const vscode = require("vscode");
 const fs = require("fs");
+const yts = require('yt-search');
 class SidebarProvider {
     constructor(_extensionUri, _context, taskReminders, breakReminders, codingTimeTracker, salahTime, calendarHolidays, dailyReminders) {
         this._extensionUri = _extensionUri;
@@ -16,9 +17,14 @@ class SidebarProvider {
     }
     resolveWebviewView(webviewView) {
         this._view = webviewView;
+        const videoPath = vscode.workspace.getConfiguration('heartbeat').get('video.localPath');
+        const localRoots = [this._extensionUri];
+        if (videoPath && fs.existsSync(videoPath)) {
+            localRoots.push(vscode.Uri.file(videoPath));
+        }
         webviewView.webview.options = {
             enableScripts: true,
-            localResourceRoots: [this._extensionUri]
+            localResourceRoots: localRoots
         };
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
         webviewView.webview.onDidReceiveMessage(data => {
@@ -91,6 +97,18 @@ class SidebarProvider {
                     break;
                 case 'overlayAction':
                     this.handleOverlayAction(data.value);
+                    break;
+                case 'openExternal':
+                    vscode.env.openExternal(vscode.Uri.parse(data.value));
+                    break;
+                case 'youtubeSearch':
+                    this.handleYoutubeSearch(data.value);
+                    break;
+                case 'browseVideoDirectory':
+                    this.browseVideoDirectory();
+                    break;
+                case 'fetchLocalVideos':
+                    this.fetchLocalVideos();
                     break;
             }
         });
@@ -307,6 +325,11 @@ class SidebarProvider {
             await config.update('settings.centralFile', settings.centralFile, vscode.ConfigurationTarget.Global);
             await this.syncWithCentralFile();
         }
+        else if (settings.type === 'video') {
+            await config.update('heartbeat.video.source', settings.videoSource, vscode.ConfigurationTarget.Global);
+            await config.update('heartbeat.video.localPath', settings.videoLocalPath, vscode.ConfigurationTarget.Global);
+            this.refresh(); // Refresh to update localResourceRoots
+        }
         this._view?.webview.postMessage({
             type: 'showNotification',
             value: { message: 'Settings saved!', type: 'success' }
@@ -381,6 +404,68 @@ class SidebarProvider {
             });
         }
     }
+    async handleYoutubeSearch(query) {
+        if (!query) {
+            this._view?.webview.postMessage({ type: 'youtubeSearchResults', value: [] });
+            return;
+        }
+        try {
+            const r = await yts(query);
+            const videos = r.videos.slice(0, 5).map((v) => ({
+                id: v.videoId,
+                title: v.title,
+                thumbnail: v.thumbnail,
+                channel: v.author.name,
+                duration: v.timestamp
+            }));
+            this._view?.webview.postMessage({ type: 'youtubeSearchResults', value: videos });
+        }
+        catch (err) {
+            console.error('YouTube search error:', err);
+        }
+    }
+    async browseVideoDirectory() {
+        const options = {
+            canSelectMany: false,
+            openLabel: 'Select Video Directory',
+            canSelectFolders: true,
+            canSelectFiles: false
+        };
+        const folderUri = await vscode.window.showOpenDialog(options);
+        if (folderUri && folderUri[0]) {
+            const config = vscode.workspace.getConfiguration('heartbeat');
+            await config.update('video.localPath', folderUri[0].fsPath, vscode.ConfigurationTarget.Global);
+            this.refresh();
+            this.sendState();
+        }
+    }
+    async fetchLocalVideos() {
+        if (!this._view)
+            return;
+        const config = vscode.workspace.getConfiguration('heartbeat');
+        const videoPath = config.get('video.localPath');
+        if (!videoPath || !fs.existsSync(videoPath)) {
+            this._view.webview.postMessage({ type: 'localVideos', value: [] });
+            return;
+        }
+        try {
+            const files = fs.readdirSync(videoPath);
+            const videoExtensions = ['.mp4', '.webm', '.ogg', '.mkv', '.avi', '.mov'];
+            const videos = files
+                .filter(file => videoExtensions.includes(file.toLowerCase().substring(file.lastIndexOf('.'))))
+                .map(file => {
+                const fullPath = vscode.Uri.file(`${videoPath}/${file}`);
+                return {
+                    name: file,
+                    path: this._view?.webview.asWebviewUri(fullPath).toString()
+                };
+            });
+            this._view.webview.postMessage({ type: 'localVideos', value: videos });
+        }
+        catch (err) {
+            console.error('Error fetching local videos:', err);
+        }
+    }
     sendState() {
         if (!this._view)
             return;
@@ -399,7 +484,9 @@ class SidebarProvider {
                 weekends: config.get('calendar.weekends'),
                 centralFile: config.get('settings.centralFile'),
                 cardOrder: this._context.globalState.get('heartbeat.cardOrder') || this._context.globalState.get('timeout.cardOrder'),
-                schedulePreviewTime: this.taskReminders.schedulePreviewTime
+                schedulePreviewTime: this.taskReminders.schedulePreviewTime,
+                videoSource: config.get('video.source'),
+                videoLocalPath: config.get('video.localPath')
             }
         });
     }
