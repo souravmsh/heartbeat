@@ -265,6 +265,10 @@ body {
   transform: scale(0.96);
 }
 
+.time-toggle-btn {
+  width: 120px;
+}
+
 .primary-btn {
   background: var(--primary-gradient);
   color: #fff;
